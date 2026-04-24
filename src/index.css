@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
-@theme {
-  --animate-logo-spin: logo-spin infinite 20s linear;
+.course-card {
+  @apply cursor-pointer flex flex-col justify-between border rounded-lg p-4;
+}
 
-  @keyframes logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+.course-card:hover {
+  transition-duration: 100ms;
+  transform: scale(1.02);
+}
+
+.course-card.selected {
+  @apply shadow-lg bg-green-100;
 }

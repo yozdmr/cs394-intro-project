@@ -8,11 +8,25 @@ interface TermPageProps {
 
 const TermPage = ({ courses }: TermPageProps) => {
   const [selectedTerm, setSelectedTerm] = useState<Term>('Fall');
+  const [selectedCourses, setSelectedCourses] = useState<Set<string>>(new Set());
+
+  const toggleCourse = (id: string) => {
+    setSelectedCourses(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   return (
     <>
       <TermSelector selectedTerm={selectedTerm} setSelectedTerm={setSelectedTerm} />
-      <CourseList courses={courses} selectedTerm={selectedTerm} />
+      <CourseList
+        courses={courses}
+        selectedTerm={selectedTerm}
+        selectedCourses={selectedCourses}
+        toggleCourse={toggleCourse}
+      />
     </>
   );
 };
