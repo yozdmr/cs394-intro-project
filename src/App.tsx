@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import Banner from './components/Banner';
-import CourseList, { type CourseListProps } from './components/CourseList';
+import TermPage from './components/TermPage';
+import type { CourseListProps } from './components/CourseList';
 
-interface ScheduleData {
+type ScheduleData = {
   title: string;
   courses: CourseListProps['courses'];
-}
+};
 
 const App = () => {
   const [data, setData] = useState<ScheduleData | undefined>();
@@ -38,7 +39,7 @@ const App = () => {
     error ? <p>Error loading data: {error.message}</p> :
     <>
       <Banner title={data?.title ?? ''} />
-      <CourseList courses={data?.courses ?? {}} />
+      <TermPage courses={data?.courses ?? {}} />
     </>
   );
 };
