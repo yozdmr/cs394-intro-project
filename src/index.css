@@ -12,3 +12,11 @@
 .course-card.selected {
   @apply shadow-lg bg-green-100;
 }
+
+.course-card.conflicting {
+  @apply opacity-40 cursor-not-allowed;
+}
+
+.course-card.conflicting:hover {
+  transform: none;
+}

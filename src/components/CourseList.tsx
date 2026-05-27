@@ -1,3 +1,4 @@
+import { hasConflict } from '../utils/timeConflicts';
 import type { Term } from './TermSelector';
 
 interface Course {
@@ -14,23 +15,34 @@ export interface CourseListProps {
   toggleCourse: (id: string) => void;
 }
 
-const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse }: CourseListProps) => (
-  <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 p-4">
-    {Object.entries(courses).filter(([, course]) => course.term === selectedTerm).map(([id, course]) => {
-      return (
-        <div key={id} onClick={() => toggleCourse(id)} className={`course-card${selectedCourses.has(id) ? ' selected' : ''}`}>
-          <div>
-            <h2 className="font-bold text-lg mb-2">{course.term} CS {course.number}</h2>
-            <p className="text-gray-600">{course.title}</p>
+const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse }: CourseListProps) => {
+  const selectedMeetings = [...selectedCourses].map(id => courses[id]).filter(Boolean).map(c => ({ meets: c.meets, term: c.term }));
+
+  return (
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 p-4">
+      {Object.entries(courses).filter(([, course]) => course.term === selectedTerm).map(([id, course]) => {
+        const isSelected = selectedCourses.has(id);
+        const conflicting = !isSelected && hasConflict(course.meets, course.term, selectedMeetings);
+
+        return (
+          <div
+            key={id}
+            onClick={() => !conflicting && toggleCourse(id)}
+            className={`course-card${isSelected ? ' selected' : ''}${conflicting ? ' conflicting' : ''}`}
+          >
+            <div>
+              <h2 className="font-bold text-lg mb-2">{course.term} CS {course.number}</h2>
+              <p className="text-gray-600">{course.title}</p>
+            </div>
+            <div>
+              <hr className="my-3 border-gray-200" />
+              <p className="text-gray-500 text-sm">{course.meets}</p>
+            </div>
           </div>
-          <div>
-            <hr className="my-3 border-gray-200" />
-            <p className="text-gray-500 text-sm">{course.meets}</p>
-          </div>
-        </div>
-      );
-    })}
-  </div>
-);
+        );
+      })}
+    </div>
+  );
+};
 
 export default CourseList;
