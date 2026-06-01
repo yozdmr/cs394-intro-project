@@ -3,6 +3,8 @@
 
 ### Firebase ###
 .idea
+.agents
+skills-lock.json
 **/node_modules/*
 
 ### Firebase Patch ###

@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { hasConflict } from '../utils/timeConflicts';
+import { hasConflict } from '../utilities/timeConflicts';
 import type { Term } from './TermSelector';
 
 interface Course {
