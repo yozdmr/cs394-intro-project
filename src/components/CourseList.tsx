@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { hasConflict } from '../utils/timeConflicts';
 import type { Term } from './TermSelector';
 
@@ -38,6 +39,14 @@ const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse }: Co
               <hr className="my-3 border-gray-200" />
               <p className="text-gray-500 text-sm">{course.meets}</p>
             </div>
+            <Link
+              to="/courses/$courseId/edit"
+              params={{ courseId: id }}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              className="mt-2 self-start text-xs text-purple-700 hover:underline"
+            >
+              Edit
+            </Link>
           </div>
         );
       })}
