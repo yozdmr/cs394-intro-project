@@ -14,9 +14,10 @@ export interface CourseListProps {
   selectedTerm: Term;
   selectedCourses: Set<string>;
   toggleCourse: (id: string) => void;
+  isAuthenticated: boolean;
 }
 
-const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse }: CourseListProps) => {
+const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse, isAuthenticated }: CourseListProps) => {
   const selectedMeetings = [...selectedCourses].map(id => courses[id]).filter(Boolean).map(c => ({ meets: c.meets, term: c.term }));
 
   return (
@@ -39,14 +40,16 @@ const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse }: Co
               <hr className="my-3 border-gray-200" />
               <p className="text-gray-500 text-sm">{course.meets}</p>
             </div>
-            <Link
-              to="/courses/$courseId/edit"
-              params={{ courseId: id }}
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
-              className="mt-2 self-start text-xs text-purple-700 hover:underline"
-            >
-              Edit
-            </Link>
+            {isAuthenticated && (
+              <Link
+                to="/courses/$courseId/edit"
+                params={{ courseId: id }}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                className="mt-2 self-start text-xs text-purple-700 hover:underline"
+              >
+                Edit
+              </Link>
+            )}
           </div>
         );
       })}

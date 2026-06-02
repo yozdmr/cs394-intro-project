@@ -1,19 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useForm, type SubmitHandler, type SubmitErrorHandler } from 'react-hook-form'
 import { courseResolver, type Course } from '../types/courses'
-
-const fetchCourse = async (courseId: string): Promise<Course> => {
-  const url = 'https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php'
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`HTTP error ${response.status}`)
-  const json = await response.json()
-  const course = json.courses[courseId]
-  if (!course) throw new Error(`Course ${courseId} not found`)
-  return course
-}
+import { saveData, useDataQuery } from '../utilities/firebase'
 
 export const Route = createFileRoute('/courses/$courseId/edit')({
-  loader: ({ params }) => fetchCourse(params.courseId),
   component: EditCourse,
 })
 
@@ -23,20 +13,32 @@ function FieldError({ message }: { message?: string }) {
 }
 
 function EditCourse() {
-  const course = Route.useLoaderData()
+  const { courseId } = Route.useParams()
+  const [courseData, loading, error] = useDataQuery(`courses/${courseId}`)
+
+  if (loading) return <p>Loading course...</p>
+  if (error) return <p>Error loading course: {error.message}</p>
+  if (!courseData) return <p>Course not found.</p>
+
+  return <EditCourseForm courseId={courseId} course={courseData as Course} />
+}
+
+function EditCourseForm({ courseId, course }: { courseId: string; course: Course }) {
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<Course>({
     defaultValues: course,
     mode: 'onChange',
     resolver: courseResolver,
   })
 
-  const onSubmit: SubmitHandler<Course> = data => {
-    console.log(data)
+  const onSubmit: SubmitHandler<Course> = async data => {
+    if (isDirty) await saveData(`courses/${courseId}`, data)
+    navigate({ to: '/' })
   }
 
   const onError: SubmitErrorHandler<Course> = () => {
@@ -98,7 +100,7 @@ function EditCourse() {
         <div className="flex gap-3">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || Object.keys(errors).length > 0}
             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 font-medium disabled:opacity-50"
           >
             Save

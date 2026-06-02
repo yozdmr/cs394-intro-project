@@ -1,6 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut as firebaseSignOut, type User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -14,6 +16,32 @@ const firebaseConfig = {
 
 const firebase = initializeApp(firebaseConfig);
 export const database = getDatabase(firebase);
+const auth = getAuth(firebase);
+
+export const signInWithGoogle = () => signInWithPopup(auth, new GoogleAuthProvider());
+export const signOut = () => firebaseSignOut(auth);
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isInitialLoading: boolean;
+}
+
+export const useAuthState = (): AuthState => {
+  const [user, setUser] = useState(auth.currentUser);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  useEffect(() => onAuthStateChanged(auth, (user) => {
+    flushSync(() => {
+      setUser(user);
+      setIsInitialLoading(false);
+    });
+  }), []);
+
+  return { user, isAuthenticated: !!user, isInitialLoading };
+};
+
+export const saveData = (path: string, value: unknown) => set(ref(database, path), value);
 
 export const useDataQuery = (path: string): [unknown, boolean, Error | undefined] => {
   const [data, setData] = useState<unknown>();

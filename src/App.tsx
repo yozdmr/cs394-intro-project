@@ -1,7 +1,6 @@
-import Banner from './components/Banner';
 import TermPage from './components/TermPage';
 import type { CourseListProps } from './components/CourseList';
-import { useDataQuery } from './utilities/firebase';
+import { useDataQuery, useAuthState } from './utilities/firebase';
 
 type ScheduleData = {
   title: string;
@@ -10,13 +9,14 @@ type ScheduleData = {
 
 const App = () => {
   const [data, loading, error] = useDataQuery('/');
+  const { isAuthenticated } = useAuthState();
 
   return (
     loading ? <p>Loading data...</p> :
     error ? <p>Error loading data: {error.message}</p> :
     <>
-      <Banner title={(data as ScheduleData).title} />
-      <TermPage courses={(data as ScheduleData).courses} />
+      <h1 className="text-2xl font-bold px-4 pt-4">{(data as ScheduleData).title}</h1>
+      <TermPage courses={(data as ScheduleData).courses} isAuthenticated={isAuthenticated} />
     </>
   );
 };

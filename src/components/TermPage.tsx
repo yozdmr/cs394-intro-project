@@ -4,6 +4,7 @@ import TermSelector, { type Term } from './TermSelector';
 
 interface TermPageProps {
   courses: CourseListProps['courses'];
+  isAuthenticated: boolean;
 }
 
 const CoursePlanModal = ({ courses, selectedCourses, onClose }: {
@@ -52,7 +53,7 @@ const CoursePlanModal = ({ courses, selectedCourses, onClose }: {
   );
 };
 
-const TermPage = ({ courses }: TermPageProps) => {
+const TermPage = ({ courses, isAuthenticated }: TermPageProps) => {
   const [selectedTerm, setSelectedTerm] = useState<Term>('Fall');
   const [selectedCourses, setSelectedCourses] = useState<Set<string>>(new Set());
   const [showPlan, setShowPlan] = useState(false);
@@ -81,6 +82,7 @@ const TermPage = ({ courses }: TermPageProps) => {
         selectedTerm={selectedTerm}
         selectedCourses={selectedCourses}
         toggleCourse={toggleCourse}
+        isAuthenticated={isAuthenticated}
       />
       {showPlan && (
         <CoursePlanModal
