@@ -14,10 +14,10 @@ export interface CourseListProps {
   selectedTerm: Term;
   selectedCourses: Set<string>;
   toggleCourse: (id: string) => void;
-  isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
-const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse, isAuthenticated }: CourseListProps) => {
+const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse, isAdmin }: CourseListProps) => {
   const selectedMeetings = [...selectedCourses].map(id => courses[id]).filter(Boolean).map(c => ({ meets: c.meets, term: c.term }));
 
   return (
@@ -40,7 +40,7 @@ const CourseList = ({ courses, selectedTerm, selectedCourses, toggleCourse, isAu
               <hr className="my-3 border-gray-200" />
               <p className="text-gray-500 text-sm">{course.meets}</p>
             </div>
-            {isAuthenticated && (
+            {isAdmin && (
               <Link
                 to="/courses/$courseId/edit"
                 params={{ courseId: id }}

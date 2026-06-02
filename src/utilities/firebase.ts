@@ -43,6 +43,19 @@ export const useAuthState = (): AuthState => {
 
 export const saveData = (path: string, value: unknown) => set(ref(database, path), value);
 
+export const useAdminStatus = (uid: string | undefined): boolean => {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!uid) { setIsAdmin(false); return; }
+    return onValue(ref(database, `admins/${uid}`), (snapshot) => {
+      setIsAdmin(snapshot.val() === true);
+    });
+  }, [uid]);
+
+  return isAdmin;
+};
+
 export const useDataQuery = (path: string): [unknown, boolean, Error | undefined] => {
   const [data, setData] = useState<unknown>();
   const [loading, setLoading] = useState(true);
